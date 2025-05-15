@@ -1,3 +1,5 @@
+package managers;
+
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -34,7 +36,6 @@ public class TaskManager {
             return null;
         }
         subtask.setId(getNextId());
-        subtask.setEpicId(epicId);
         subtasks.put(subtask.getId(), subtask);
         epics.get(epicId).addSubtaskId(subtask.getId());
         updateEpicStatus(epicId);
@@ -57,8 +58,11 @@ public class TaskManager {
 
     public void updateSubtask(Subtask subtask) {
         if (subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask);
-            updateEpicStatus(subtask.getEpicId());
+            int epicId = subtask.getEpicId();
+            if (epics.containsKey(epicId) && epics.get(epicId).getSubtaskIds().contains(subtask.getId())) {
+                subtasks.put(subtask.getId(), subtask);
+                updateEpicStatus(subtask.getEpicId());
+            }
         }
     }
 
