@@ -10,7 +10,61 @@ public class Main {
     private static final TaskManager manager = Managers.getDefault();
 
     public static void main(String[] args) {
-        System.out.println("Let's go!");
+
+        System.out.println("\nДополнительное задание:");
+        Task taskCreate1 = manager.createTask(new Task("Сходить в магазин", "Купить торт для праздника", TaskStatus.NEW));
+        Task taskCreate2 = manager.createTask(new Task("Позвонить подруге", "Пригласить подругу на бокал чая", TaskStatus.NEW));
+        Epic epicCreate3 = manager.createEpic(new Epic("Финальное задание", "Сделать финальное задание до пятницы"));
+        Epic epicCreate4 = manager.createEpic(new Epic("Отпуск", "Отдохнуть на Гавайях"));
+        Subtask subtaskCreate5 = manager.createSubtask(new Subtask("Первое", "Погладить кота", TaskStatus.NEW, epicCreate3.getId()));
+        Subtask subtaskCreate6 = manager.createSubtask(new Subtask("Второе", "Погладить второго кота", TaskStatus.NEW, epicCreate3.getId()));
+        Subtask subtaskCreate7 = manager.createSubtask(new Subtask("Третье", "Создать грандиозное творение", TaskStatus.NEW, epicCreate3.getId()));
+
+        System.out.println("Создали всякие задачи/эпики/подзадачи:");
+        System.out.println(manager.getAllTasks());
+        System.out.println(manager.getAllEpics());
+        System.out.println(manager.getAllSubtasks());
+
+        System.out.println("\nЗапросили задачи в порядке 1-3-5-2-4-6:");
+        manager.getTaskById(taskCreate1.getId());
+        manager.getEpicById(epicCreate3.getId());
+        manager.getSubtaskById(subtaskCreate5.getId());
+        manager.getTaskById(taskCreate2.getId());
+        manager.getEpicById(epicCreate4.getId());
+        manager.getSubtaskById(subtaskCreate6.getId());
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        System.out.println("\nЗапросили еще задачи в порядке 7-2-4:");
+        manager.getSubtaskById(subtaskCreate7.getId());
+        manager.getTaskById(taskCreate2.getId());
+        manager.getEpicById(epicCreate4.getId());
+
+        System.out.println("Новая история:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        System.out.println("\nУдалили задачу 2:");
+        manager.deleteTaskById(taskCreate2.getId());
+
+        System.out.println("Новая история:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        System.out.println("\nУдалили эпик 3:");
+        manager.deleteEpicById(epicCreate3.getId());
+
+        System.out.println("Новая история:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+
+        /* System.out.println("Let's go!");
 
         System.out.println("\nСоздание задач:");
         Task taskCreate1 = manager.createTask(new Task("Сходить в магазин", "Купить торт для праздника", TaskStatus.NEW));
@@ -74,5 +128,6 @@ public class Main {
         manager.deleteAllEpics();
         manager.deleteAllSubtasks();
         System.out.println("Ничего не осталось: " + manager.getAllTasks() + manager.getAllEpics() + manager.getAllSubtasks());
+         */
     }
 }
