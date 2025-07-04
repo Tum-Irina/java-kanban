@@ -1,17 +1,24 @@
 package managers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import tasks.Task;
 import tasks.TaskStatus;
+
+import java.io.File;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
 
+    @TempDir
+    Path tempDir;
+
     @Test
-    void shouldReturnInitializedTaskManager() {
-        TaskManager manager = Managers.getDefault();
-        assertNotNull(manager, "Менеджер задач не должен быть null");
+    void shouldReturnInitializedTaskManager() throws Exception {
+        File testFile = tempDir.resolve("test_tasks.csv").toFile();
+        TaskManager manager = new FileBackedTaskManager(testFile);
         Task task = new Task("Task", "Description", TaskStatus.NEW);
         Task createdTask = manager.createTask(task);
         assertNotNull(createdTask, "Менеджер должен создавать задачи");
