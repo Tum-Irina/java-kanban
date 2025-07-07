@@ -2,6 +2,8 @@ package managers;
 
 import tasks.*;
 
+import java.util.List;
+
 public class CSVFormat {
 
     public static String getHeader() {
@@ -24,9 +26,9 @@ public class CSVFormat {
         return TaskType.TASK;
     }
 
-    public static String toString(HistoryManager historyManager) {
+    public static String toString(List<Task> history) {
         StringBuilder builder = new StringBuilder();
-        for (Task task : historyManager.getHistory()) {
+        for (Task task : history) {
             builder.append(task.getId()).append(",");
         }
         if (!builder.isEmpty()) {
