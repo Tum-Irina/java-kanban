@@ -30,7 +30,6 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldSaveAndLoadEmptyManager() {
-        manager.save();
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
 
         assertTrue(loaded.getAllTasks().isEmpty());
@@ -46,7 +45,6 @@ class FileBackedTaskManagerTest {
         Subtask subtask = manager.createSubtask(new Subtask("Subtask 1", "Description",
                 TaskStatus.NEW, epic.getId()));
 
-        manager.save();
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
 
         assertEquals(1, loaded.getAllTasks().size());
@@ -69,8 +67,7 @@ class FileBackedTaskManagerTest {
 
         manager.getTaskById(task.getId());
         manager.getEpicById(epic.getId());
-
-        manager.save();
+        manager.updateTask(task);
         FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(tempFile);
 
         assertEquals(2, loaded.getHistory().size());
