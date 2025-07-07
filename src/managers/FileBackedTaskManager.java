@@ -165,7 +165,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    void save() {
+    private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(CSVFormat.getHeader());
             writer.newLine();
@@ -184,7 +184,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
             writer.newLine();
-            writer.write(CSVFormat.toString(historyManager));
+            writer.write(CSVFormat.toString(historyManager.getHistory()));
 
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения в файл", e);
