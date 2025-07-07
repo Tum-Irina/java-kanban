@@ -194,7 +194,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicStatus(int epicId) {
+    protected void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return;
 
