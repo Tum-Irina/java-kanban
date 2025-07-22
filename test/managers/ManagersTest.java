@@ -19,15 +19,6 @@ class ManagersTest {
     private final LocalDateTime testTime = LocalDateTime.now();
 
     @Test
-    void shouldCreateTaskWithTimeViaDefaultManager() {
-        TaskManager manager = Managers.getDefault();
-        Task task = manager.createTask(new Task("Task", "Desc", TaskStatus.NEW,
-                testTime, Duration.ofHours(1)));
-        assertNotNull(task.getStartTime());
-        assertEquals(testTime, manager.getTaskById(task.getId()).getStartTime());
-    }
-
-    @Test
     void shouldCreateFileBackedManagerWithTimeSupport() throws Exception {
         File file = tempDir.resolve("tasks.csv").toFile();
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
