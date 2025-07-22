@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     Task createTask(Task task);
@@ -46,4 +47,6 @@ public interface TaskManager {
     void deleteSubtask(int id);
 
     ArrayList<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 }
