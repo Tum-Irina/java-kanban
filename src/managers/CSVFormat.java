@@ -24,7 +24,8 @@ public class CSVFormat {
                 task instanceof Subtask ? ((Subtask) task).getEpicId() : "",
                 task.getStartTime() != null ? task.getStartTime().format(formatter) : "",
                 task.getDuration() != null ? task.getDuration().toMinutes() : 0
-        );    }
+        );
+    }
 
     static TaskType getTaskType(Task task) {
         if (task instanceof Epic) return TaskType.EPIC;
