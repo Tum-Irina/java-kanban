@@ -2,6 +2,9 @@ package managers;
 
 import tasks.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CSVFormat {
@@ -11,13 +14,17 @@ public class CSVFormat {
     }
 
     public static String toString(Task task) {
-        return String.format("%d,%s,%s,%s,%s,%s",
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%d",
                 task.getId(),
                 getTaskType(task),
                 task.getName(),
                 task.getStatus(),
                 task.getDescription(),
-                task instanceof Subtask ? ((Subtask) task).getEpicId() : "");
+                task instanceof Subtask ? ((Subtask) task).getEpicId() : "",
+                task.getStartTime() != null ? task.getStartTime().format(formatter) : "",
+                task.getDuration() != null ? task.getDuration().toMinutes() : 0
+        );
     }
 
     static TaskType getTaskType(Task task) {
@@ -44,10 +51,12 @@ public class CSVFormat {
         String name = split[2];
         TaskStatus status = TaskStatus.valueOf(split[3]);
         String description = split[4];
+        LocalDateTime startTime = split[6].isEmpty() ? null : LocalDateTime.parse(split[6]);
+        Duration duration = split[7].isEmpty() ? null : Duration.ofMinutes(Long.parseLong(split[7]));
 
         switch (type) {
             case TASK:
-                Task task = new Task(name, description, status);
+                Task task = new Task(name, description, status, startTime, duration);
                 task.setId(id);
                 return task;
             case EPIC:
@@ -56,7 +65,7 @@ public class CSVFormat {
                 return epic;
             case SUBTASK:
                 int epicId = Integer.parseInt(split[5]);
-                Subtask subtask = new Subtask(name, description, status, epicId);
+                Subtask subtask = new Subtask(name, description, status, epicId, startTime, duration);
                 subtask.setId(id);
                 return subtask;
             default:

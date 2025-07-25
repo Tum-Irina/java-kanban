@@ -7,12 +7,18 @@ import tasks.Subtask;
 import tasks.Task;
 import tasks.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-    private InMemoryTaskManager manager;
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+
+    @Override
+    protected InMemoryTaskManager createManager() {
+        return new InMemoryTaskManager();
+    }
 
     @BeforeEach
     void setUp() {
@@ -20,8 +26,44 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void shouldDetectTimeOverlapsForTasks() {
+        LocalDateTime time = LocalDateTime.now();
+        manager.createTask(new Task("Task1", "Desc", TaskStatus.NEW,
+                time, Duration.ofHours(1)));
+        Task overlappingTask = new Task("Task2", "Desc", TaskStatus.NEW,
+                time.plusMinutes(30), Duration.ofHours(1));
+        assertThrows(ManagerSaveException.class, () -> manager.createTask(overlappingTask));
+    }
+
+    @Test
+    void shouldDetectTimeOverlapsForSubtasks() {
+        LocalDateTime time = LocalDateTime.now();
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        manager.createSubtask(new Subtask("Sub1", "Desc", TaskStatus.NEW,
+                epic.getId(), time, Duration.ofHours(1)));
+        Subtask overlappingSub = new Subtask("Sub2", "Desc", TaskStatus.NEW,
+                epic.getId(), time.plusMinutes(30), Duration.ofHours(1));
+
+        assertThrows(ManagerSaveException.class, () -> manager.createSubtask(overlappingSub));
+    }
+
+    @Test
+    void shouldCalculateEpicTimeThroughManager() {
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        Subtask sub1 = manager.createSubtask(new Subtask("Sub1", "Desc",
+                TaskStatus.NEW, epic.getId(), testTime, Duration.ofHours(1)));
+        Subtask sub2 = manager.createSubtask(new Subtask("Sub2", "Desc",
+                TaskStatus.NEW, epic.getId(), testTime.plusHours(2), Duration.ofHours(2)));
+
+        // Проверяем расчетные значения
+        assertEquals(testTime, manager.getEpicById(epic.getId()).getStartTime());
+        assertEquals(Duration.ofHours(3), manager.getEpicById(epic.getId()).getDuration());
+        assertEquals(testTime.plusHours(4), manager.getEpicById(epic.getId()).getEndTime());
+    }
+
+    @Test
     void shouldAddAndFindTask() {
-        Task task = new Task("Task", "Description", TaskStatus.NEW);
+        Task task = new Task("Task", "Description", TaskStatus.NEW, testTime, Duration.ofHours(1));
         Task createdTask = manager.createTask(task);
         Task foundTask = manager.getTaskById(createdTask.getId());
         ArrayList<Task> tasks = manager.getAllTasks();
@@ -57,7 +99,8 @@ class InMemoryTaskManagerTest {
     void shouldAddAndFindSubtask() {
         Epic epic = new Epic("Epic", "Description");
         manager.createEpic(epic);
-        Subtask subtask = new Subtask("Subtask", "Description", TaskStatus.NEW, epic.getId());
+        Subtask subtask = new Subtask("Subtask", "Description", TaskStatus.NEW, epic.getId(),
+                testTime, Duration.ofHours(1));
         Subtask createdSubtask = manager.createSubtask(subtask);
         Subtask foundSubtask = manager.getSubtaskById(createdSubtask.getId());
         ArrayList<Subtask> subtasks = manager.getAllSubtasks();
